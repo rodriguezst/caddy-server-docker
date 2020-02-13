@@ -1,19 +1,23 @@
-FROM alpine:latest
-LABEL maintainer "Carlos Rodriguez <comercial@rodriguezst.es>" architecture="ARM32v7/armhf"
+FROM alpine:latest as downloader
+LABEL maintainer "Carlos Rodriguez <comercial@rodriguezst.es>" architecture="x86_64"
 
-ARG plugins=http.cors,http.jwt,http.login,http.realip
+ARG plugins=http.cors,http.jwt,http.login,http.realip,http.cgi
 
-RUN apk add --no-cache tar curl libcap && \
+RUN apk --update --no-cache add \ 
+    ca-certificates tar curl libcap && \
     curl --silent --show-error --fail --location --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-      "https://caddyserver.com/download/linux/arm7?plugins=${plugins}&license=personal&telemetry=off" \
-    | tar --no-same-owner -C /usr/bin/ -xz caddy && \
-    setcap cap_net_bind_service=+ep `readlink -f /usr/bin/caddy` && \
-    /usr/bin/caddy -version
+      "https://caddyserver.com/download/linux/amd64?plugins=${plugins}&license=personal&telemetry=off" \
+    | tar --no-same-owner -C /usr/bin/ -xz caddy
+
+FROM scratch
+
+COPY --from=downloader /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=downloader /usr/bin/caddy /usr/bin/caddy
 
 EXPOSE 80 443 2015
 VOLUME /srv
-VOLUME /root/.caddy
-WORKDIR /srv
+VOLUME /config
 
+WORKDIR /config
 ENTRYPOINT ["/usr/bin/caddy"]
-CMD ["--conf", "/root/.caddy/Caddyfile"]
+CMD ["--conf", "/config/Caddyfile", "--agree"]
