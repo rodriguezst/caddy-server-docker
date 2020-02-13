@@ -6,7 +6,7 @@ ARG plugins=http.cors,http.jwt,http.login,http.realip,http.cgi
 RUN apk --update --no-cache add \ 
     ca-certificates tar curl libcap && \
     curl --silent --show-error --fail --location --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-      "https://caddyserver.com/download/linux/arm7?plugins=${plugins}&license=personal&telemetry=off" \
+      "https://caddyserver.com/download/linux/amd64?plugins=${plugins}&license=personal&telemetry=off" \
     | tar --no-same-owner -C /usr/bin/ -xz caddy
 
 FROM scratch
