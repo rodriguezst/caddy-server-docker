@@ -1,4 +1,5 @@
 FROM alpine:latest as downloader
+LABEL maintainer "Carlos Rodriguez <comercial@rodriguezst.es>" architecture="x86_64"
 
 ARG plugins=http.cors,http.jwt,http.login,http.realip,http.cgi
 
@@ -16,7 +17,6 @@ COPY --from=downloader /usr/bin/caddy /usr/bin/caddy
 EXPOSE 80 443 2015
 VOLUME /srv
 VOLUME /config
-ENV CADDYPATH /config
 
 WORKDIR /config
 ENTRYPOINT ["/usr/bin/caddy"]
