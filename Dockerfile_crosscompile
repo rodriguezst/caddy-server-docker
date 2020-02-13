@@ -1,5 +1,5 @@
 FROM alpine:latest as downloader
-LABEL maintainer "Carlos Rodriguez <comercial@rodriguezst.es>" architecture="x86_64"
+LABEL maintainer "Carlos Rodriguez <comercial@rodriguezst.es>" architecture="ARM32v7/armhf"
 
 ARG plugins=http.cors,http.jwt,http.login,http.realip,http.cgi
 
